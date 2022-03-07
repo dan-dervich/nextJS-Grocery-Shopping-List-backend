@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
-import { } from 'dotenv/config'
 
 const connect = async () => {
     try {
-        await mongoose.connect(process.env.MONGO + '', {
+        await mongoose.connect('mongodb://uhgadps8czlfzbpovalo:Rm2DDVlJMdIyzFKf8sPd@bfpqubni11nmfa0-mongodb.services.clever-cloud.com:27017/bfpqubni11nmfa0', {
             'useNewUrlParser': true,
             'useUnifiedTopology': true
         })
