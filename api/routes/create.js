@@ -106,18 +106,29 @@ router.post('/grocery/:id', async (req, res) => {
 
 router.post('/update/:id', async (req, res) => {
     var date = new Date();
-    const docs = await Groceries.updateOne({
-        "groceries._id": req.params.id
+    const docs1 = await Groceries.updateOne({
+        "groceries._id": req.body.id
     }, {
-        $set: {
-            groceries: [{
+        $pull: {
+            groceries: {
+                "_id": req.body.id
+            }
+        }
+    })
+    console.log(docs1)
+    const docs = await Groceries.updateOne({
+        "_id": req.params.id
+    }, {
+        $addToSet: {
+            groceries: {
                 grocery_item_name: req.body.item,
                 cuantity: req.body.cuantity,
                 createdOn: date.toLocaleDateString(),
                 appendedBy: req.body.appendedBy
-            }]
+            }
         }
     })
+    console.log(docs)
     const {
         acknowledged,
         modifiedCount,
