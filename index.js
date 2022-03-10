@@ -14,6 +14,7 @@ import {
 import {
     router as deleteRouter
 } from './api/routes/delete.js'
+import nodemailer from 'nodemailer'
 const logger = morgan
 
 
@@ -28,10 +29,52 @@ app.use('/r', readRouter)
 app.use('/d', deleteRouter)
 
 
+const transport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: "juanchodelarosa11173663@gmail.com",
+        pass: 'itrlwghkrunawqtj'
+    }
+})
+
+function sendEmail(mail, res) {
+    var mailOptions = {
+        from: mail.from,
+        to: mail.to,
+        replyTo: null,
+        subject: mail.subject,
+        html: `${mail.body}`,
+    }
+    transport.sendMail(mailOptions, (err, info) => {
+        console.log(info)
+        if (err) {
+            console.log(err)
+            res.json({
+                "status": false
+            })
+        } else {
+            res.json({
+                "status": true
+            })
+        }
+    })
+}
+
+
 app.get('/', (req, res) => {
     res.json({
         status: "everything should be working fine : )"
     })
+})
+
+app.post('/feedback', async (req, res)=>{
+    let mail = {
+        from: 'juanchodelarosa11173663@gmail.com',
+        to: 'dandervich@gmail.com',
+        subject: 'Error in groceries app',
+        body: `Hey Dan, you gotta fix an error in the sign-up/login page. the error their getting is: ${req.body.feedback}. <br /> error detected by: ${req.body.email}`
+    }
+    sendEmail(mail, res)
 })
 
 
