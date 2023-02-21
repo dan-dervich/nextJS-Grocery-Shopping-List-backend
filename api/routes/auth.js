@@ -13,13 +13,13 @@ router.use(express.json())
 router.use(cors({
     origin: "*"
 }))
-
-
 const transport = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.sendgrid.net',
+    port: 587,
+    secure: false,
     auth: {
-        user: "juanchodelarosa11173663@gmail.com",
-        pass: 'itrlwghkrunawqtj'
+        user: 'apikey',
+        pass: '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'
     }
 })
 
@@ -93,9 +93,10 @@ router.post('/forgotPWD', async (req, res) => {
         })
         if (docs.familyEmail == req.body.email) {
             let mail = {
-                from: 'juanchodelarosa11173663@gmail.com',
+                from: 'dandervich@gmail.com',
                 to: req.body.email,
                 subject: 'Olvide Mi Contraseña',
+                text: 'restablecer tu contraseña',
                 body: `<h1>Restablecer Contraseña:</h1> <br> <h4><a href="https://next-js-grocery-shopping-list.vercel.app//auth/forgotPWD/${docs._id}">Restablecer</a></h4> Puedes restablecer tu contraseña con el link de arriba o copiar este link: https://next-js-grocery-shopping-list.vercel.app//auth/forgotPassword/${docs._id}`
             }
             sendEmail(mail, res)
