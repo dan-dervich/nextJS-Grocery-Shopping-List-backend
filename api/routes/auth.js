@@ -14,13 +14,14 @@ router.use(cors({
     origin: "*"
 }))
 const transport = nodemailer.createTransport({
-    host: 'smtp.sendgrid.net',
-    port: 587,
-    secure: false,
-    auth: {
-        user: 'apikey',
-        pass: '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'
-    }
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "holacomomteva@gmail.com",
+    pass: "zzqdlbddnxxzmwun",
+  },
 })
 
 function sendEmail(mail, res) {
