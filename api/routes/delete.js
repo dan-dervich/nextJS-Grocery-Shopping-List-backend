@@ -15,6 +15,7 @@ router.get('/grocery/:id', async (req, res) => {
             "status": true
         })
     } catch (err) {
+        console.log(err)
         res.json({
             "status": false
         })

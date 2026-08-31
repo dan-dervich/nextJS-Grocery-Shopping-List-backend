@@ -23,6 +23,7 @@ router.post('/create-new-family-user/:id', async (req, res) => {
             "status": true
         })
     } catch (err) {
+        console.log(err)
         res.json({
             "status": false,
             errorMessage: "errorSavingUser"
@@ -52,6 +53,7 @@ router.post('/new-user', async (req, res) => {
                 })
                 return
             } catch (err) {
+                console.log(err)
                 res.json({
                     "status": "errorSavingGrocery"
                 })
@@ -85,6 +87,7 @@ router.post('/grocery/:id', async (req, res) => {
             status: true
         })
     } catch (err) {
+        console.log(err)
         res.json({
             status: false
         })
@@ -110,6 +113,7 @@ router.post('/update/:id', async (req, res) => {
             status: true
         })
     } catch (err) {
+        console.log(err)
         res.json({
             status: false
         })

@@ -58,6 +58,7 @@ router.post("/login", async (req, res) => {
                     pb.filter('familyEmail = {:email}', { email: req.body.email })
                 )
             } catch (err) {
+                console.log(err)
                 docs = null
             }
             console.log(docs)
@@ -100,6 +101,7 @@ router.post('/forgotPWD', async (req, res) => {
                 pb.filter('familyEmail = {:email}', { email: req.body.email })
             )
         } catch (err) {
+            console.log(err)
             docs = null
         }
         if (docs !== null && docs.familyEmail == req.body.email) {
@@ -126,6 +128,7 @@ router.post('/forgotPWD/:id', async (req, res) => {
                 "status": true
             })
         } catch (err) {
+            console.log(err)
             res.json({
                 "status": false,
                 errorMessage: "errorSettingPassword"
@@ -149,6 +152,7 @@ router.get('/check-user/:id', async (req, res) => {
         })
     } catch (err) {
         //! error
+        console.log(err)
         res.json({
             "status": "error"
         })

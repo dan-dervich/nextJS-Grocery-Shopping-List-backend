@@ -20,6 +20,7 @@ router.get('/all-groceries/:id', async (req, res) => {
             id: family.id
         })
     } catch (err) {
+        console.log(err)
         res.json({
             groceries: [],
             id: null
@@ -35,6 +36,7 @@ router.get('/users/:id', async (req, res) => {
             users: family.familyUsers || []
         })
     } catch (err) {
+        console.log(err)
         res.json({
             users: []
         })
