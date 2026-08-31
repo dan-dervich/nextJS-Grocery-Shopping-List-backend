@@ -1,0 +1,207 @@
+[
+  {
+    "id": "pbc_families0000001",
+    "name": "families",
+    "type": "base",
+    "system": false,
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "id": "text_families_id",
+        "name": "id",
+        "type": "text",
+        "system": true,
+        "required": true,
+        "primaryKey": true,
+        "hidden": false,
+        "presentable": false,
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "pattern": "^[a-z0-9]+$",
+        "min": 15,
+        "max": 15
+      },
+      {
+        "id": "text_familyEmail",
+        "name": "familyEmail",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "text_familyPassword",
+        "name": "familyPassword",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "json_familyUsers",
+        "name": "familyUsers",
+        "type": "json",
+        "system": false,
+        "required": false,
+        "hidden": false,
+        "presentable": false,
+        "maxSize": 0
+      },
+      {
+        "id": "autodate_families_created",
+        "name": "created",
+        "type": "autodate",
+        "system": false,
+        "required": false,
+        "hidden": false,
+        "presentable": false,
+        "onCreate": true,
+        "onUpdate": false
+      },
+      {
+        "id": "autodate_families_updated",
+        "name": "updated",
+        "type": "autodate",
+        "system": false,
+        "required": false,
+        "hidden": false,
+        "presentable": false,
+        "onCreate": true,
+        "onUpdate": true
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_familyEmail` ON `families` (`familyEmail`)"
+    ]
+  },
+  {
+    "id": "pbc_groceries0000001",
+    "name": "groceries",
+    "type": "base",
+    "system": false,
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "id": "text_groceries_id",
+        "name": "id",
+        "type": "text",
+        "system": true,
+        "required": true,
+        "primaryKey": true,
+        "hidden": false,
+        "presentable": false,
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "pattern": "^[a-z0-9]+$",
+        "min": 15,
+        "max": 15
+      },
+      {
+        "id": "relation_family",
+        "name": "family",
+        "type": "relation",
+        "system": false,
+        "required": true,
+        "hidden": false,
+        "presentable": false,
+        "collectionId": "pbc_families0000001",
+        "cascadeDelete": true,
+        "minSelect": 1,
+        "maxSelect": 1
+      },
+      {
+        "id": "text_grocery_item_name",
+        "name": "grocery_item_name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "text_cuantity",
+        "name": "cuantity",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "text_appendedBy",
+        "name": "appendedBy",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "text_createdOn",
+        "name": "createdOn",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "primaryKey": false,
+        "hidden": false,
+        "presentable": false,
+        "min": 0,
+        "max": 0,
+        "pattern": ""
+      },
+      {
+        "id": "autodate_groceries_created",
+        "name": "created",
+        "type": "autodate",
+        "system": false,
+        "required": false,
+        "hidden": false,
+        "presentable": false,
+        "onCreate": true,
+        "onUpdate": false
+      },
+      {
+        "id": "autodate_groceries_updated",
+        "name": "updated",
+        "type": "autodate",
+        "system": false,
+        "required": false,
+        "hidden": false,
+        "presentable": false,
+        "onCreate": true,
+        "onUpdate": true
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_groceries_family` ON `groceries` (`family`)"
+    ]
+  }
+]

@@ -4,7 +4,7 @@ import {
     comparePWD,
     hashPWD
 } from '../encrypting.js'
-import Groceries from '../../db/groceriesModel.js'
+import { pb } from '../../db/pocketbase.js'
 import nodemailer from 'nodemailer'
 
 const router = express.Router()
@@ -52,9 +52,14 @@ router.post("/login", async (req, res) => {
     if (req.body.password) {
         if (req.body.email) {
             console.log(req.body.email)
-            const docs = await Groceries.findOne({
-                familyEmail: req.body.email
-            })
+            let docs
+            try {
+                docs = await pb.collection('families').getFirstListItem(
+                    pb.filter('familyEmail = {:email}', { email: req.body.email })
+                )
+            } catch (err) {
+                docs = null
+            }
             console.log(docs)
             if (docs == null) {
                 res.json({
@@ -65,7 +70,7 @@ router.post("/login", async (req, res) => {
                 if (compare == true) {
                     res.json({
                         "status": "everythingIsOk",
-                        id: docs._id
+                        id: docs.id
                     })
                 } else {
                     res.json({
@@ -89,16 +94,21 @@ router.post("/login", async (req, res) => {
 
 router.post('/forgotPWD', async (req, res) => {
     if (req.body.email) {
-        const docs = await Groceries.findOne({
-            familyEmail: req.body.email
-        })
-        if (docs.familyEmail == req.body.email) {
+        let docs
+        try {
+            docs = await pb.collection('families').getFirstListItem(
+                pb.filter('familyEmail = {:email}', { email: req.body.email })
+            )
+        } catch (err) {
+            docs = null
+        }
+        if (docs !== null && docs.familyEmail == req.body.email) {
             let mail = {
                 from: 'dandervich@gmail.com',
                 to: req.body.email,
                 subject: 'Olvide Mi Contraseña',
                 text: 'restablecer tu contraseña',
-                body: `<h1>Restablecer Contraseña:</h1> <br> <h4><a href="https://next-js-grocery-shopping-list.vercel.app//auth/forgotPWD/${docs._id}">Restablecer</a></h4> Puedes restablecer tu contraseña con el link de arriba o copiar este link: https://next-js-grocery-shopping-list.vercel.app//auth/forgotPassword/${docs._id}`
+                body: `<h1>Restablecer Contraseña:</h1> <br> <h4><a href="https://next-js-grocery-shopping-list.vercel.app//auth/forgotPWD/${docs.id}">Restablecer</a></h4> Puedes restablecer tu contraseña con el link de arriba o copiar este link: https://next-js-grocery-shopping-list.vercel.app//auth/forgotPassword/${docs.id}`
             }
             sendEmail(mail, res)
         }
@@ -108,23 +118,14 @@ router.post('/forgotPWD', async (req, res) => {
 router.post('/forgotPWD/:id', async (req, res) => {
     if (req.body.password) {
         const pwd = await hashPWD(req.body.password)
-        const docs = await Groceries.updateOne({
-            "_id": req.params.id
-        }, {
-            $set: {
+        try {
+            await pb.collection('families').update(req.params.id, {
                 familyPassword: pwd
-            }
-        })
-        const {
-            acknowledged,
-            modifiedCount,
-            matchedCount
-        } = docs
-        if (acknowledged == true && modifiedCount > 0 && matchedCount > 0) {
+            })
             res.json({
                 "status": true
             })
-        } else {
+        } catch (err) {
             res.json({
                 "status": false,
                 errorMessage: "errorSettingPassword"
@@ -140,15 +141,13 @@ router.post('/forgotPWD/:id', async (req, res) => {
 
 
 router.get('/check-user/:id', async (req, res) => {
-    const docs = await Groceries.findOne({
-        "_id": req.params.id
-    })
-    if (docs !== null) {
+    try {
+        await pb.collection('families').getOne(req.params.id)
         //* success
         res.json({
             "status": "success"
         })
-    } else {
+    } catch (err) {
         //! error
         res.json({
             "status": "error"

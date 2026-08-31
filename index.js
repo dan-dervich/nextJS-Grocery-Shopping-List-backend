@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 const app = express()
 import morgan from 'morgan'
@@ -15,8 +16,10 @@ import {
     router as deleteRouter
 } from './api/routes/delete.js'
 import nodemailer from 'nodemailer'
+import connect from './db/pocketbase.js'
 const logger = morgan
 
+connect()
 
 app.use(logger('dev'))
 app.use(cors({

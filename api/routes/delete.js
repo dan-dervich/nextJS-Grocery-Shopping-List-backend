@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import cors from 'cors'
-import Groceries from '../../db/groceriesModel.js'
+import { pb } from '../../db/pocketbase.js'
 
 router.use(express.json())
 router.use(cors({
@@ -9,24 +9,15 @@ router.use(cors({
 }))
 
 router.get('/grocery/:id', async (req, res) => {
-    const docs = await Groceries.updateOne({
-        "groceries._id": req.params.id
-    }, {
-        $pull: {
-            groceries: {
-                "_id": req.params.id
-            }
-        }
-    })
-    const {
-        acknowledged,
-        modifiedCount,
-        matchedCount
-    } = docs
-    if (acknowledged == true && modifiedCount > 0 && matchedCount > 0) {
-        res.json({"status": true})
-    } else{
-        res.json({"status": false})
+    try {
+        await pb.collection('groceries').delete(req.params.id)
+        res.json({
+            "status": true
+        })
+    } catch (err) {
+        res.json({
+            "status": false
+        })
     }
 })
 

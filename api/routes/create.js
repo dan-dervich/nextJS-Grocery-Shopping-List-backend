@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import cors from 'cors'
-import Groceries from '../../db/groceriesModel.js'
+import { pb } from '../../db/pocketbase.js'
 import {
     hashPWD
 } from '../encrypting.js'
@@ -12,23 +12,17 @@ router.use(cors({
 }))
 
 router.post('/create-new-family-user/:id', async (req, res) => {
-    const docs = await Groceries.updateOne({
-        "_id": req.params.id
-    }, {
-        $addToSet: {
-            familyUsers: [req.body.user]
-        }
-    })
-    const {
-        acknowledged,
-        modifiedCount,
-        matchedCount
-    } = docs
-    if (acknowledged == true && modifiedCount > 0 && matchedCount > 0) {
+    try {
+        const family = await pb.collection('families').getOne(req.params.id)
+        const familyUsers = Array.isArray(family.familyUsers) ? family.familyUsers : []
+        familyUsers.push(req.body.user)
+        await pb.collection('families').update(req.params.id, {
+            familyUsers
+        })
         res.json({
             "status": true
         })
-    } else {
+    } catch (err) {
         res.json({
             "status": false,
             errorMessage: "errorSavingUser"
@@ -46,24 +40,23 @@ router.post('/new-user', async (req, res) => {
                 })
                 return
             }
-            const docs = new Groceries({
-                familyEmail: req.body.email,
-                familyPassword: password
-            })
-            docs.save((err, grocery) => {
-                if (err) {
-                    res.json({
-                        "status": "errorSavingGrocery"
-                    })
-                    return
-                } else {
-                    res.json({
-                        "status": "savedCorrectly",
-                        id: grocery._id
-                    })
-                    return
-                }
-            })
+            try {
+                const family = await pb.collection('families').create({
+                    familyEmail: req.body.email,
+                    familyPassword: password,
+                    familyUsers: []
+                })
+                res.json({
+                    "status": "savedCorrectly",
+                    id: family.id
+                })
+                return
+            } catch (err) {
+                res.json({
+                    "status": "errorSavingGrocery"
+                })
+                return
+            }
         } else {
             res.json({
                 "status": "noPasswordSentToBackend"
@@ -80,65 +73,47 @@ router.post('/new-user', async (req, res) => {
 
 router.post('/grocery/:id', async (req, res) => {
     var date = new Date();
-    const docs = await Groceries.updateOne({
-        "_id": req.params.id
-    }, {
-        $addToSet: {
-            groceries: [{
-                createdOn: date.toLocaleDateString(),
-                appendedBy: req.body.appendedBy,
-                grocery_item_name: req.body.comida,
-                cuantity: req.body.cuantity
-            }]
-        }
-    })
-    const {
-        acknowledged,
-        modifiedCount,
-        matchedCount
-    } = docs
-    if (acknowledged == true && modifiedCount > 0 && matchedCount > 0) {
+    try {
+        await pb.collection('groceries').create({
+            family: req.params.id,
+            createdOn: date.toLocaleDateString(),
+            appendedBy: req.body.appendedBy,
+            grocery_item_name: req.body.comida,
+            cuantity: req.body.cuantity
+        })
         res.json({
             status: true
+        })
+    } catch (err) {
+        res.json({
+            status: false
         })
     }
 })
 
 router.post('/update/:id', async (req, res) => {
     var date = new Date();
-    const docs1 = await Groceries.updateOne({
-        "groceries._id": req.body.id
-    }, {
-        $pull: {
-            groceries: {
-                "_id": req.body.id
-            }
-        }
-    })
-    console.log(docs1)
-    const docs = await Groceries.updateOne({
-        "_id": req.params.id
-    }, {
-        $addToSet: {
-            groceries: {
-                grocery_item_name: req.body.item,
-                cuantity: req.body.cuantity,
-                createdOn: date.toLocaleDateString(),
-                appendedBy: req.body.appendedBy
-            }
-        }
-    })
-    console.log(docs)
-    const {
-        acknowledged,
-        modifiedCount,
-        matchedCount
-    } = docs
-    if (acknowledged == true && modifiedCount > 0 && matchedCount > 0) {
+    try {
+        await pb.collection('groceries').delete(req.body.id)
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        await pb.collection('groceries').create({
+            family: req.params.id,
+            grocery_item_name: req.body.item,
+            cuantity: req.body.cuantity,
+            createdOn: date.toLocaleDateString(),
+            appendedBy: req.body.appendedBy
+        })
         res.json({
             status: true
         })
-    }   
+    } catch (err) {
+        res.json({
+            status: false
+        })
+    }
 })
 
 export {
