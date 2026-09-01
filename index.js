@@ -16,16 +16,23 @@ import {
     router as deleteRouter
 } from './api/routes/delete.js'
 import nodemailer from 'nodemailer'
-import connect from './db/pocketbase.js'
+import { ensureAuth } from './db/pocketbase.js'
 const logger = morgan
-
-connect()
 
 app.use(logger('dev'))
 app.use(cors({
     origin: '*'
 }))
 app.use(express.json())
+app.use(async (req, res, next) => {
+    try {
+        await ensureAuth()
+        next()
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: 'databaseConnectionError' })
+    }
+})
 app.use('/auth', authRouter)
 app.use('/c', createRoute)
 app.use('/r', readRouter)
