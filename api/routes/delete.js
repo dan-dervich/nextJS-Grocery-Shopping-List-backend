@@ -22,6 +22,25 @@ router.get('/grocery/:id', async (req, res) => {
     }
 })
 
+router.post('/family-user/:id', async (req, res) => {
+    try {
+        const family = await pb.collection('families').getOne(req.params.id)
+        const familyUsers = Array.isArray(family.familyUsers) ? family.familyUsers : []
+        const updatedUsers = familyUsers.filter((user) => user !== req.body.user)
+        await pb.collection('families').update(req.params.id, {
+            familyUsers: updatedUsers
+        })
+        res.json({
+            "status": true
+        })
+    } catch (err) {
+        console.log(err)
+        res.json({
+            "status": false
+        })
+    }
+})
+
 export {
     router
 }
